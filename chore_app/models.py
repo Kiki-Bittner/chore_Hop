@@ -90,15 +90,21 @@ class Address(models.Model):
 class Chore(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
-    location = models.ForeignKey(Address, related_name="has_location", on_delete=models.CASCADE)
-    deliver_to = models.ForeignKey(Address, related_name="has_deliver_to", on_delete=models.CASCADE)
+    location = models.ForeignKey(Address, related_name="has_location", on_delete=models.CASCADE, default = None)
+    deliver_to = models.ForeignKey(Address, related_name="has_deliver_to", on_delete=models.CASCADE, default = None)
     due_date = models.DateField(max_length=80)
-    price = models.IntegerField()
-    completed = models.BooleanField()
-    status = models.IntegerField()
-    lister = models.ForeignKey(User, related_name="has_listed", on_delete=models.CASCADE)
-    worker = models.ForeignKey(User, related_name="has_worked", on_delete=models.CASCADE)
+    price = models.IntegerField(default = 0) #stripe takes price in cents
+    completed = models.BooleanField(blank = True)
+    status = models.IntegerField(blank = True)
+    lister = models.ForeignKey(User, related_name="has_listed", on_delete=models.CASCADE, default = None)
+    worker = models.ForeignKey(User, related_name="has_worked", on_delete=models.CASCADE, default = None)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = ChoreManager()
+    
+    def __str__(self):
+        return self.name
+
+    def get_display_price(self):
+        return "{0:.2f}".format(self.price / 100)
 
