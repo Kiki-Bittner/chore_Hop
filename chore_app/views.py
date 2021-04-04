@@ -6,3 +6,6 @@ def index(request):
 
 def user_dash(request):
     return render(request, 'user_dash.html')
+
+def driver_dash(request):
+    return render(request, 'driver_dash.html')
