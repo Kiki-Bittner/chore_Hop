@@ -106,17 +106,34 @@ def register(request):
 
 
 def login(request):
-    errors = User.objects.login_validator(request.POST)
+    if request.POST['startup_owner'] == 'customer':
+        errors = Customer.objects.login_validator(request.POST)
+        if len(errors):
+            for key, value in errors.items():
+                messages.error(request, value)
+            return redirect('/')
+        else:
+            customer = Customer.objects.get(email=request.POST['login_email'])  # note that here I went with 'login_email', not with email_address
+            request.session['customer_id'] = customer.id
+            request.session['greeting'] = customer.first_name
+            context = {
+            }
+            return render(request, 'customer_dash.html', context)
 
-    if len(errors):
-        for key, value in errors.items():
-            messages.error(request, value)
-        return redirect('/')
-    else:
-        user = User.objects.get(email=request.POST['login_email'])  # note that here I went with 'login_email', not with email_address
-        request.session['user_id'] = user.id
-        request.session['greeting'] = user.first_name
-    return render(request, 'user_dash.html', context)
+    if request.POST['startup_owner'] == 'driver':
+        errors = Driver.objects.login_validator(request.POST)
+        if len(errors):
+            for key, value in errors.items():
+                messages.error(request, value)
+            return redirect('/')
+        else:
+            driver = Driver.objects.get(email=request.POST['login_email'])  # note that here I went with 'login_email', not with email_address
+            request.session['driver_id'] = driver.id
+            request.session['greeting'] = driver.first_name
+            context = {            
+            }
+            return render(request, 'driver_dash.html', context)
+
 
 def customer_dash(request):
     pass
