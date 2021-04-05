@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 from django.http import JsonResponse
 from django.views import View
 #import stripe 
-from .models import Chore
+from .models import Chore, Driver, Customer
 #stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -53,31 +53,57 @@ class CreateCheckoutSessionView(View):
 
 ### ACCESS RIGHTS ###
 def register(request):
-    errors = User.objects.user_validator(request.POST)
+    if request.POST['startup_owner'] == 'driver':
+        errors = Driver.objects.user_validator(request.POST)
+        if len(errors):
+            for key, value in errors.items():
+                messages.error(request, value)
+            return redirect('/')
+        else:
+            driver = Driver.objects.create(
+                first_name = request.POST['first_name'],
+                last_name = request.POST['last_name'],
+                email_address = request.POST['email_address'],
+                phone = request.POST['phone'],
+                street = request.POST['street'],
+                # street2 = request.POST['street2'], # we agreed not to use 'street2'
+                city = request.POST['city'],
+                state = request.POST['state'],
+                zip_code = request.POST['zip_code'],
+                # user_lvl = request.POST['user_lvl'], # we may need to think this through in terms of how we collect this data
+                photo = request.POST['photo'],  # person creating this feature should tell us what goes here
+                password = bcrypt.hashpw(request.POST['password'].encode(), bcrypt.gensalt()).decode()
+            )
+            request.session['driver_id'] = driver.id
+            request.session['greeting'] = driver.first_name
+            return redirect('/startups')
 
-    if len(errors):
-        for key, value in errors.items():
-            messages.error(request, value)
-        return redirect('/')
-    else:
-        user = User.objects.create(
-            first_name = request.POST['first_name'],
-            last_name = request.POST['last_name'],
-            email_address = request.POST['email_address'],
-            phone = request.POST['phone'],
-            street = request.POST['street'],
-            # street2 = request.POST['street2'], # we agreed not to use 'street2'
-            city = request.POST['city'],
-            state = request.POST['state'],
-            zip_code = request.POST['zip_code'],
-            user_lvl = request.POST['user_lvl'], # we may need to think this through in terms of how we collect this data
-            photo = request.POST['photo'],  # person creating this feature should tell us what goes here
-            password = bcrypt.hashpw(request.POST['password'].encode(), bcrypt.gensalt()).decode()
-        )
-        request.session['user_id'] = user.id
-        request.session['greeting'] = user.first_name
+    
+    if request.POST['startup_owner'] == 'customer':
+        errors = Customer.objects.user_validator(request.POST)
+        if len(errors):
+            for key, value in errors.items():
+                messages.error(request, value)
+            return redirect('/')
+        else:
+            customer = Customer.objects.create(
+                first_name = request.POST['first_name'],
+                last_name = request.POST['last_name'],
+                email_address = request.POST['email_address'],
+                phone = request.POST['phone'],
+                street = request.POST['street'],
+                # street2 = request.POST['street2'], # we agreed not to use 'street2'
+                city = request.POST['city'],
+                state = request.POST['state'],
+                zip_code = request.POST['zip_code'],
+                # user_lvl = request.POST['user_lvl'], # we may need to think this through in terms of how we collect this data
+                photo = request.POST['photo'],  # person creating this feature should tell us what goes here
+                password = bcrypt.hashpw(request.POST['password'].encode(), bcrypt.gensalt()).decode()
+            )
+            request.session['customer_id'] = customer.id
+            request.session['greeting'] = customer.first_name
+            return redirect('/startups')
 
-    return redirect('/startups')
 
 def login(request):
     errors = User.objects.login_validator(request.POST)
