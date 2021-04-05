@@ -14,3 +14,6 @@ def driver_dash(request):
 
 def driver_chore(request):
     return render(request, 'driver_chore.html')
+
+def user_chore(request):
+    return render(request, 'user_chore.html')

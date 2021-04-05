@@ -71,7 +71,7 @@
         </nav>
         
         <div class="container">
-          <h1 class="display-4 py-3 mb-3">{chore.name}</h1>
+          <h1 class="display-4 py-3 mb-3">{chore.name} Status</h1>
 
           <div class="shadow card">
             <div class="card-body">
@@ -83,7 +83,7 @@
                             <th scope="col">Location</th>
                             <th scope="col">$ Price</th>
                             <th scope="col">Due</th>
-                            <th scope="col">User</th>
+                            <th scope="col">Driver</th>
                             <th scope="col">Status</th>
                             <th scope="col">Action</th>
                             </tr>
@@ -99,12 +99,13 @@
                             <td>Unclaimed</td>
 
                             <td>
-                                <button class="btn btn-primary">Claim</button>
+                                <button class="btn btn-danger">Delete</button>
+                                <button class="btn btn-success">Update</button>
                             </td>
                             </tr>
                         </tbody>
                         </table>
-                <p class="card-text text-center"><button class="btn btn-outline-primary">Chore Location</button> <button class="btn btn-outline-primary">Drop Off Location</button></p>
+                <p class="card-text ">Driver Location</p>
             </div>
             <img src="https://static.makeuseof.com/wp-content/uploads/2015/10/gps-map.jpg" class="card-img-bottom" alt="map">
           </div>
