@@ -1,9 +1,6 @@
 from django.urls import path, include
 from . import views
-from chore_app.views import (
-    CreateCheckoutSessionView,
-    ChoreLandingPageView
-)
+
 
 urlpatterns = [
     path('', views.index, name ='home'),
