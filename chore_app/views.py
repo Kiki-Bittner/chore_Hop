@@ -7,6 +7,8 @@ import stripe
 from .models import Chore
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+def base(request):
+    return render(request, 'base.html')
 
 def index(request):
     return render(request, 'index.html')

@@ -1,13 +1,6 @@
 
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Buy cool new product</title>
-        <link rel="stylesheet" href="style.css">
-        <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
-        <script src="https://js.stripe.com/v3/"></script>
-    </head>
-    <body>
+{% extends 'base.html %}
+{% block content %}
         <section>
         <div class="product">
             <div class="description">
@@ -17,7 +10,7 @@
         </div>
         <button type="button" id="checkout-button">Checkout</button>
         </section>
-    </body>
+{% endblock content %}
     <script type="text/javascript">
         // Create an instance of the Stripe object with your publishable API key
         var stripe = Stripe('{{ STRIPE_PUBLIC_KEY }}');
