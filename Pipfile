@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 stripe = "*"
+pillow = "*"
 
 [dev-packages]
 
