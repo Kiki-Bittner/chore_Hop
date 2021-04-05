@@ -7,5 +7,6 @@ urlpatterns = [
     path('user_dash', views.user_dash),
     path('driver_dash', views.driver_dash),
     path('driver_chore', views.driver_chore),
-    path('user_chore', views.user_chore)
+    path('user_chore', views.user_chore),
+    path('edit_user', views.edit_user)
 ]

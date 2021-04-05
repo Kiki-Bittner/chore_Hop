@@ -17,3 +17,6 @@ def driver_chore(request):
 
 def user_chore(request):
     return render(request, 'user_chore.html')
+
+def edit_user(request):
+    return render(request, 'edit_user.html')
