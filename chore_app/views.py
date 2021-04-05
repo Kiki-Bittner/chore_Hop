@@ -4,7 +4,8 @@ from django.views.generic import TemplateView
 from django.http import JsonResponse
 from django.views import View
 #import stripe 
-from .models import Chore
+from .models import Chore, Driver, Customer
+
 #stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
