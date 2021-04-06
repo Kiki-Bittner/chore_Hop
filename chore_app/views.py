@@ -6,8 +6,6 @@ from django.views import View
 #import stripe 
 from .models import Chore, Driver, Customer
 <<<<<<< HEAD
-=======
-<<<<<<< HEAD
 
 <<<<<<< HEAD
 def base(request):
@@ -15,7 +13,6 @@ def base(request):
 =======
 =======
 >>>>>>> 867abd9e692c0164ed731f7a5876df6ed00f67c3
->>>>>>> 469b2cb408d3e652b1a5a5274a694c0deec3882f
 #stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -144,6 +141,10 @@ def login(request):
             context = {            
             }
             return render(request, 'driver_dash.html', context)
+<<<<<<< HEAD
+=======
+
+>>>>>>> e7a142a4e846c74deda67ed6b0d475337a45b6b9
 
 def customer_dash(request):
 
