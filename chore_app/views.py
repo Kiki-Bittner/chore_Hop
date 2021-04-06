@@ -5,10 +5,6 @@ from django.http import JsonResponse
 from django.views import View
 #import stripe 
 from .models import Chore, Driver, Customer
-<<<<<<< HEAD
-
-=======
->>>>>>> 867abd9e692c0164ed731f7a5876df6ed00f67c3
 #stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -80,7 +76,7 @@ def register(request):
             )
             request.session['driver_id'] = driver.id
             request.session['greeting'] = driver.first_name
-            return redirect('/startups')
+            return redirect('/driver_dash')
 
     
     if request.POST['startup_owner'] == 'customer':
@@ -96,7 +92,6 @@ def register(request):
                 email_address = request.POST['email_address'],
                 phone = request.POST['phone'],
                 street = request.POST['street'],
-                # street2 = request.POST['street2'], # we agreed not to use 'street2'
                 city = request.POST['city'],
                 state = request.POST['state'],
                 zip_code = request.POST['zip_code'],
@@ -106,24 +101,42 @@ def register(request):
             )
             request.session['customer_id'] = customer.id
             request.session['greeting'] = customer.first_name
-            return redirect('/startups')
+            return redirect('/customer_dash')
 
 
 def login(request):
-    errors = User.objects.login_validator(request.POST)
+    if request.POST['startup_owner'] == 'customer':
+        errors = Customer.objects.login_validator(request.POST)
+        if len(errors):
+            for key, value in errors.items():
+                messages.error(request, value)
+            return redirect('/')
+        else:
+            customer = Customer.objects.get(email=request.POST['login_email'])  # note that here I went with 'login_email', not with email_address
+            request.session['customer_id'] = customer.id
+            request.session['greeting'] = customer.first_name
+            context = {
+            }
+            return render(request, 'customer_dash.html', context)
 
-    if len(errors):
-        for key, value in errors.items():
-            messages.error(request, value)
-        return redirect('/')
-    else:
-        user = User.objects.get(email=request.POST['login_email'])  # note that here I went with 'login_email', not with email_address
-        request.session['user_id'] = user.id
-        request.session['greeting'] = user.first_name
-    return render(request, 'user_dash.html', context)
+    if request.POST['startup_owner'] == 'driver':
+        errors = Driver.objects.login_validator(request.POST)
+        if len(errors):
+            for key, value in errors.items():
+                messages.error(request, value)
+            return redirect('/')
+        else:
+            driver = Driver.objects.get(email=request.POST['login_email'])  # note that here I went with 'login_email', not with email_address
+            request.session['driver_id'] = driver.id
+            request.session['greeting'] = driver.first_name
+            context = {            
+            }
+            return render(request, 'driver_dash.html', context)
 
 def customer_dash(request):
-    pass
+
+    return render(request, 'user_dash.html', context)
 
 def driver_dash(request):
-    pass
+
+    return render(request, 'driver_dash.html', context)
