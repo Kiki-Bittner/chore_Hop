@@ -9,8 +9,5 @@ urlpatterns = [
     path('', views.index, name ='home'),
     path('landing/', ChoreLandingPageView.as_view(), name = 'landing-page'),
     path('create-checkout-session/', CreateCheckoutSessionView.as_view(), name='create-checkout-session'),
-    path('register', views.register),
-    path('login', views.login),
-    path('customer_dash', views.customer_dash),
-    path('driver_dash', views.driver_dash),
+    path('base/', views.base, name='base'),
 ]

@@ -5,10 +5,22 @@ from django.http import JsonResponse
 from django.views import View
 #import stripe 
 from .models import Chore, Driver, Customer
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+
+<<<<<<< HEAD
+def base(request):
+    return render(request, 'base.html')
+=======
+=======
+>>>>>>> 867abd9e692c0164ed731f7a5876df6ed00f67c3
+>>>>>>> 469b2cb408d3e652b1a5a5274a694c0deec3882f
 #stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 # IMPORTANT:  UNBLOCK 'stripe' stuff above when ready to test it
+>>>>>>> 9a0c2f409e30f35e1b4e0a71d4be9f5f2f6934d9
 
 def index(request):
     return render(request, 'index.html')
