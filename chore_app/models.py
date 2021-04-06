@@ -3,12 +3,13 @@ from datetime import datetime
 import re
 import bcrypt
 
-EMAIL_REGEX = re.compile('^[_a-z0-9-]+(.[_a-z0-9-]+)@[a-z0-9-]+(.[a-z0-9-]+)(.[a-z]{2,4})$')
+# EMAIL_REGEX = re.compile('^[_a-z0-9-]+(.[_a-z0-9-]+)@[a-z0-9-]+(.[a-z0-9-]+)(.[a-z]{2,4})$') # maybe not use... we'll see
+EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 
 class CustomerManager(models.Manager):
     def customer_validator(self, postData):
         errors = {}
-        email_check = User.objects.filter(email_address=postData['email_address'])
+        email_check = Customer.objects.filter(email_address=postData['email_address'])
         if len(postData['first_name']) < 2:
             errors['first_name'] = "Error, First Name must be longer than 2 characters."
         if len(postData['last_name']) < 2:
@@ -19,36 +20,37 @@ class CustomerManager(models.Manager):
             errors['password_match'] = "Error, your Passwords must match."
         if len(postData['email_address']) < 5:
             errors['email_short'] = "Error, Email must be longer than 4 characters."
-        elif not EMAIL_REGEX.match(postData['email_address']):
+        if not EMAIL_REGEX.match(postData['email_address']):
             errors['email_valid'] = "Error, Please enter a valid email."
-        elif email_check:
+        if email_check:
             errors['email_in_use'] = "Error, Email Address is already registered."
         if len(postData['street']) < 1:
             errors['street'] = "Error, Please enter a valid street name."
         if len(postData['city']) < 1:
             errors['city'] = "Error, Please enter a valid city name."
-        if len(postData['zip']) < 5:
-            errors['zip'] = "Error, Please enter a valid zip_code."
-        if len(postData['state']) < 2:
-            errors['state'] = "Error, Please enter a valid state."
+        if len(postData['zip_code']) < 5:
+            errors['zip_code'] = "Error, Please enter a valid zip_code."
+        # if len(postData['state']) < 5:
+        #     errors['state'] = "Error, Please enter a valid state."
 
         return errors
 
     def login_validator(self, postData):
         errors = {}
-        customer_check = Customer.objects.filter(email_address=postData['email_address'])
+        customer_check = Customer.objects.filter(email_address=postData['login_email'])
         if not customer_check:
-            errors['please_register'] = "Error, Email not registered."
+            errors['login_email'] = "Error, Email not registered."
         else:
-            if not bcrypt.checkpw(postData['password'].encode(), customer_check[0].password.encode()):
-                errors['password_wrong'] = "Error, Email and Password do not match."
+            if not bcrypt.checkpw(postData['login_password'].encode(), customer_check[0].password.encode()):
+                errors['login_email'] = "Error, Email and Password do not match."
         return errors
     
 
 class DriverManager(models.Manager):
+
     def driver_validator(self, postData):
         errors = {}
-        email_check = User.objects.filter(email_address=postData['email_address'])
+        email_check = Driver.objects.filter(email_address=postData['email_address'])
         if len(postData['first_name']) < 2:
             errors['first_name'] = "Error, First Name must be longer than 2 characters."
         if len(postData['last_name']) < 2:
@@ -59,31 +61,30 @@ class DriverManager(models.Manager):
             errors['password_match'] = "Error, your Passwords must match."
         if len(postData['email_address']) < 5:
             errors['email_short'] = "Error, Email must be longer than 4 characters."
-        elif not EMAIL_REGEX.match(postData['email_address']):
+        if not EMAIL_REGEX.match(postData['email_address']):
             errors['email_valid'] = "Error, Please enter a valid email."
-        elif email_check:
+        if email_check:
             errors['email_in_use'] = "Error, Email Address is already registered."
         if len(postData['street']) < 1:
             errors['street'] = "Error, Please enter a valid street name."
         if len(postData['city']) < 1:
             errors['city'] = "Error, Please enter a valid city name."
-        if len(postData['zip']) < 5:
-            errors['zip'] = "Error, Please enter a valid zip_code."
-        if len(postData['state']) < 2:
-            errors['state'] = "Error, Please enter a valid state."
+        if len(postData['zip_code']) < 5:
+            errors['zip_code'] = "Error, Please enter a valid zip_code."
+        # if len(postData['state']) < 5:
+        #     errors['state'] = "Error, Please enter a valid state."
 
         return errors
 
     def login_validator(self, postData):
         errors = {}
-        driver_check = Driver.objects.filter(email_address=postData['email_address'])
+        driver_check = Driver.objects.filter(email_address=postData['login_email'])
         if not driver_check:
-            errors['please_register'] = "Error, Email not registered."
+            errors['login_email'] = "Error, Email not registered."
         else:
-            if not bcrypt.checkpw(postData['password'].encode(), driver_check[0].password.encode()):
-                errors['password_wrong'] = "Error, Email and Password do not match."
+            if not bcrypt.checkpw(postData['login_password'].encode(), driver_check[0].password.encode()):
+                errors['login_email'] = "Error, Email and Password do not match."
         return errors
-
 
 
 class ChoreManager(models.Manager):
@@ -106,15 +107,14 @@ class Customer(models.Model):
     last_name = models.CharField(max_length=255)
     email_address = models.CharField(max_length=255)
     password = models.CharField(max_length=150)
-    phone_number = models.IntegerField()
+    phone = models.IntegerField()
     likes = models.IntegerField(null=True, blank=True)
     dislikes = models.IntegerField(null=True, blank=True)
-    user_lvl = models.IntegerField()
     photo = models.ImageField(null=True, blank=True)
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     zip_code = models.IntegerField()
-    state = models.CharField(max_length=2)
+    state = models.CharField(max_length=5)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)    
     objects = CustomerManager()
@@ -125,15 +125,14 @@ class Driver(models.Model):
     last_name = models.CharField(max_length=255)
     email_address = models.CharField(max_length=255)
     password = models.CharField(max_length=150)
-    phone_number = models.IntegerField()
+    phone = models.IntegerField()
     likes = models.IntegerField(null=True, blank=True)
     dislikes = models.IntegerField(null=True, blank=True)
-    user_lvl = models.IntegerField()
     photo = models.ImageField(null=True, blank=True)
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     zip_code = models.IntegerField()
-    state = models.CharField(max_length=2)
+    state = models.CharField(max_length=5)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)    
     objects = DriverManager()
@@ -146,8 +145,8 @@ class Chore(models.Model):
     price = models.IntegerField()
     completed = models.BooleanField()
     status = models.IntegerField()
-    customer = models.ForeignKey(Customer, related_name="has_customer", on_delete=models.CASCADE)
-    driver = models.ForeignKey(Customer, related_name="has_driven", on_delete=models.CASCADE, null=True, blank=True)
+    customer = models.ForeignKey(Customer, related_name="has_customer", on_delete=models.CASCADE, null=True, blank=True)
+    driver = models.ForeignKey(Driver, related_name="has_driven", on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = ChoreManager()

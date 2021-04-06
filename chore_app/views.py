@@ -3,21 +3,24 @@ from django.conf import settings
 from django.views.generic import TemplateView
 from django.http import JsonResponse
 from django.views import View
-#import stripe 
+from django.contrib import messages 
 from .models import Chore, Driver, Customer
-<<<<<<< HEAD
+import bcrypt
 
-<<<<<<< HEAD
+#import stripe
+# <<<<<<< HEAD
+
+# <<<<<<< HEAD
 def base(request):
     return render(request, 'base.html')
-=======
-=======
->>>>>>> 867abd9e692c0164ed731f7a5876df6ed00f67c3
-#stripe.api_key = settings.STRIPE_SECRET_KEY
+# =======
+# =======
+# >>>>>>> 867abd9e692c0164ed731f7a5876df6ed00f67c3
+# #stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
-# IMPORTANT:  UNBLOCK 'stripe' stuff above when ready to test it
->>>>>>> 9a0c2f409e30f35e1b4e0a71d4be9f5f2f6934d9
+# # IMPORTANT:  UNBLOCK 'stripe' stuff above when ready to test it
+# >>>>>>> 9a0c2f409e30f35e1b4e0a71d4be9f5f2f6934d9
 
 def index(request):
     return render(request, 'index.html')
@@ -63,7 +66,7 @@ class CreateCheckoutSessionView(View):
 ### ACCESS RIGHTS ###
 def register(request):
     if request.POST['startup_owner'] == 'driver':
-        errors = Driver.objects.user_validator(request.POST)
+        errors = Driver.objects.driver_validator(request.POST)
         if len(errors):
             for key, value in errors.items():
                 messages.error(request, value)
@@ -75,11 +78,9 @@ def register(request):
                 email_address = request.POST['email_address'],
                 phone = request.POST['phone'],
                 street = request.POST['street'],
-                # street2 = request.POST['street2'], # we agreed not to use 'street2'
                 city = request.POST['city'],
                 state = request.POST['state'],
                 zip_code = request.POST['zip_code'],
-                # user_lvl = request.POST['user_lvl'], # we may need to think this through in terms of how we collect this data
                 photo = request.POST['photo'],  # person creating this feature should tell us what goes here
                 password = bcrypt.hashpw(request.POST['password'].encode(), bcrypt.gensalt()).decode()
             )
@@ -89,7 +90,7 @@ def register(request):
 
     
     if request.POST['startup_owner'] == 'customer':
-        errors = Customer.objects.user_validator(request.POST)
+        errors = Customer.objects.customer_validator(request.POST)
         if len(errors):
             for key, value in errors.items():
                 messages.error(request, value)
@@ -121,10 +122,11 @@ def login(request):
                 messages.error(request, value)
             return redirect('/')
         else:
-            customer = Customer.objects.get(email=request.POST['login_email'])  # note that here I went with 'login_email', not with email_address
+            customer = Customer.objects.get(email_address=request.POST['login_email'])  # note that here I went with 'login_email', not with email_address
             request.session['customer_id'] = customer.id
             request.session['greeting'] = customer.first_name
             context = {
+                'first_name': Customer.objects.all(),
             }
             return render(request, 'customer_dash.html', context)
 
@@ -135,21 +137,23 @@ def login(request):
                 messages.error(request, value)
             return redirect('/')
         else:
-            driver = Driver.objects.get(email=request.POST['login_email'])  # note that here I went with 'login_email', not with email_address
+            driver = Driver.objects.get(email_address=request.POST['login_email'])  # note that here I went with 'login_email', not with email_address
             request.session['driver_id'] = driver.id
             request.session['greeting'] = driver.first_name
             context = {            
             }
             return render(request, 'driver_dash.html', context)
-<<<<<<< HEAD
-=======
+# <<<<<<< HEAD
+# =======
 
->>>>>>> e7a142a4e846c74deda67ed6b0d475337a45b6b9
+# >>>>>>> e7a142a4e846c74deda67ed6b0d475337a45b6b9
 
 def customer_dash(request):
 
     return render(request, 'user_dash.html', context)
 
 def driver_dash(request):
-
+    context = {
+        # context is empty for now, so add what you need if you need to add stuff to driver_dash page
+    }
     return render(request, 'driver_dash.html', context)
