@@ -147,28 +147,18 @@ class Chore(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     due_date = models.DateField(max_length=80)
-<<<<<<< HEAD
-    price = models.IntegerField()
-    completed = models.BooleanField(default=False)
-    status = models.IntegerField(default=1)
-=======
     price = models.IntegerField(default=0)
     completed = models.BooleanField()
     status = models.IntegerField()
->>>>>>> main
     customer = models.ForeignKey(Customer, related_name="has_customer", on_delete=models.CASCADE, null=True, blank=True)
     driver = models.ForeignKey(Driver, related_name="has_driven", on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = ChoreManager()
 
-<<<<<<< HEAD
     def __repr__(self):
         return f"<Chore: {self.name} {self.customer} {self.driver} ({self.id})>"
-=======
-    def __str__(self):
-        return self.name
+
 
     def get_display_price(self):
         return "{0:.2f}".format(self.price / 100)
->>>>>>> main
