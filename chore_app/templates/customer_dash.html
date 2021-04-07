@@ -20,11 +20,9 @@
                     <table class="table table-hover">
                       <thead>
                         <tr>
-                          <th scope="col">#</th>
                           <th scope="col">Name</th>
                           <th scope="col">Description</th>
                           <th scope="col">$ Price</th>
-                          <th scope="col">Location</th>
                           <th scope="col">Due</th>
                           <th scope="col">Driver</th>
                           <th scope="col">Status</th>
@@ -33,47 +31,30 @@
                       </thead>
                       <tbody>
                         <tr>
-                          <th scope="row">1</th>
-                          <td><a href="/user_chore" class="text-decoration-none text-info">Get Laundry</a></td>
-                          <td>some spicy descriptive text</td>
-                          <td>$ 42.00</td>
-                          <td>Laundromat</td>
-                          <td>3:00PM April 1st</td>
-                          <td>Mike S</td>
-                          <td>in transit</td>
+                          {% for item in customer_chores %}
+
+                          <td><a href="/user_chore/{{chore_id}}" class="text-decoration-none text-info">{{item.name}}</a></td>
+                          <td>{{item.description}}</td>
+                          <td>$ {{item.price}}</td>
+                          <td>{{item.due_date}}</td>
+                          <td>{{item.driver}}</td>
+                            {% if item.status == 1 %}
+                              <td>Unclaimed</td>
+                            {% elif item.status == 2 %}
+                              <td>Claimed</td>
+                            {% elif item.status == 3 %}
+                              <td>In-Transit</td>
+                            {% elif item.status == 4 %}
+                              <td>Completed</td>
+                            {% endif %}
                           <td>
-                            <button class="btn btn-danger">Delete</button>
+                            <form method="POST" action="/delete_chore/{{customer_id}}/{{chore_id}}">
+                              <button class="btn btn-danger" type="submit">Delete</button>
+                            </form>
                             <button class="btn btn-success">Update</button>
                           </td>
                         </tr>
-                        <tr>
-                          <th scope="row">1</th>
-                          <td>Get Laundry</td>
-                          <td>some spicy descriptive text</td>
-                          <td>$ 42.00</td>
-                          <td>Laundromat</td>
-                          <td>3:00PM April 1st</td>
-                          <td>Mike S</td>
-                          <td>in transit</td>
-                          <td>
-                            <button class="btn btn-danger">Delete</button>
-                            <button class="btn btn-success">Update</button>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th scope="row">1</th>
-                          <td>Get Laundry</td>
-                          <td>some spicy descriptive text</td>
-                          <td>$ 42.00</td>
-                          <td>Laundromat</td>
-                          <td>3:00PM April 1st</td>
-                          <td>Mike S</td>
-                          <td>in transit</td>
-                          <td>
-                            <button class="btn btn-danger">Delete</button>
-                            <button class="btn btn-success">Update</button>
-                          </td>
-                        </tr>
+                          {% endfor %}
                       </tbody>
                     </table>
                   </div>
@@ -92,18 +73,11 @@
 
                   <div class="shadow p-3 mb-5 bg-body rounded">
                     <h2>New Chore</h2>
-                    <form>
+                    <form action="/new_chore/{{current_customer.id}}" method="POST">
+                      {% csrf_token %}
                       <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
                         <input type="text" class="form-control" name="name" placeholder="What do you need done?">
-                      </div>
-                      <div class="mb-3">
-                        <label for="address" class="form-label">Address</label>
-                        <input type="text" class="form-control" name="address" placeholder="Where should your driver go first?">
-                      </div>
-                      <div class="mb-3">
-                        <label for="deliver_to" class="form-label">Delivered To</label>
-                        <input type="text" class="form-control" name="deliver_to" placeholder="Where will your driver finish?">
                       </div>
                       <div class="mb-3">
                         <label for="description" class="form-label">Description</label>

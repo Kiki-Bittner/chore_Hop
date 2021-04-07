@@ -19,7 +19,6 @@
                     <table class="table table-hover">
                       <thead>
                         <tr>
-                          <th scope="col">#</th>
                           <th scope="col">Name</th>
                           <th scope="col">Description</th>
                           <th scope="col">$ Price</th>
@@ -31,50 +30,23 @@
                         </tr>
                       </thead>
                       <tbody>
+                        {% for item in driver_chores %}
+                          {% for location in current_driver %}
                         <tr>
-                          <th scope="row">1</th>
-                          <td>Get Laundry</td>
-                          <td>some spicy descriptive text</td>
-                          <td>$ 42.00</td>
-                          <td>Laundromat</td>
-                          <td>3:00PM April 1st</td>
-                          <td>Mike S</td>
+                          <td>{{item.name}}</td>
+                          <td>{{item.description}}</td>
+                          <td>$ {{item.price}}</td>
+                          <td>{{location.street}} {{location.city}}, {{location.state}} {{location.zip_code}}</td>
+                          <td>{{item.due_date}}</td>
+                          <td>{{item.customer.first_name}}</td>
                           <td>in transit</td>
                           <td>
                             <button class="btn btn-warning">Drop</button>
                             <button class="btn btn-primary">Start</button>
                             <button class="btn btn-success">Complete</button>
                           </td>
-                        </tr>
-                        <tr>
-                          <th scope="row">1</th>
-                          <td>Get Laundry</td>
-                          <td>some spicy descriptive text</td>
-                          <td>$ 42.00</td>
-                          <td>Laundromat</td>
-                          <td>3:00PM April 1st</td>
-                          <td>Mike S</td>
-                          <td>in transit</td>
-                          <td>
-                            <button class="btn btn-warning">Drop</button>
-                            <button class="btn btn-primary">Start</button>
-                            <button class="btn btn-success">Complete</button>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th scope="row">1</th>
-                          <td>Get Laundry</td>
-                          <td>some spicy descriptive text</td>
-                          <td>$ 42.00</td>
-                          <td>Laundromat</td>
-                          <td>3:00PM April 1st</td>
-                          <td>Mike S</td>
-                          <td>in transit</td>
-                          <td>
-                            <button class="btn btn-warning">Drop</button>
-                            <button class="btn btn-primary">Start</button>
-                            <button class="btn btn-success">Complete</button>
-                          </td>
+                        {% endfor %}
+                          {% endfor %}
                         </tr>
                       </tbody>
                     </table>
@@ -152,45 +124,25 @@
                         <caption class="caption-top text-center"><h3>Results</h3></caption>
                         <thead>
                             <tr>
-                            <th scope="col">#</th>
                             <th scope="col">Name</th>
-                            <th scope="col">Location</th>
                             <th scope="col">$ Price</th>
                             <th scope="col">User</th>
                             <th scope="col">Action</th>
                             </tr>
                         </thead>
                         <tbody>
+                          {% for item in customer_chores %}
                             <tr>
-                            <th scope="row">1</th>
-                            <td><a href="/driver_chore" class="text-decoration-none text-info">Get Laundry</a></td>
-                            <td>Laundromat</td>
-                            <td>$ 42.00</td>
-                            <td>Mike S</td>
+                            <td><a href="/driver_chore" class="text-decoration-none text-info">{{item.name}}</a></td>
+                            <td>$ {{item.price}}</td>
+                            <td>{{item.customer.first_name}}</td>
                             <td>
+                              <form method="POST" action="/claim_chore/{{driver_id}}">
                                 <button class="btn btn-primary">Claim</button>
+                              </form>
                             </td>
                             </tr>
-                            <tr>
-                            <th scope="row">2</th>
-                            <td>Get Laundry</td>
-                            <td>Laundromat</td>
-                            <td>$ 42.00</td>
-                            <td>Mike S</td>
-                            <td>
-                                <button class="btn btn-primary">Claim</button>
-                            </td>
-                            </tr>
-                            <tr>
-                            <th scope="row">3</th>
-                            <td>Get Laundry</td>
-                            <td>Laundromat</td>
-                            <td>$ 42.00</td>
-                            <td>Mike S</td>
-                            <td>
-                                <button class="btn btn-primary">Claim</button>
-                            </td>
-                            </tr>
+                          {% endfor %}
                         </tbody>
                         </table>
                     </div>

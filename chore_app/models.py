@@ -119,6 +119,9 @@ class Customer(models.Model):
     updated_at = models.DateTimeField(auto_now=True)    
     objects = CustomerManager()
 
+    def __repr__(self):
+        return f"<Customer: {self.first_name} {self.email_address} {self.street} ({self.id})>"
+
 
 class Driver(models.Model):
     first_name = models.CharField(max_length=255)
@@ -137,6 +140,8 @@ class Driver(models.Model):
     updated_at = models.DateTimeField(auto_now=True)    
     objects = DriverManager()
 
+    def __repr__(self):
+        return f"<Driver: {self.first_name} {self.email_address} {self.street} ({self.id})>"
 
 class Chore(models.Model):
     name = models.CharField(max_length=255)
@@ -151,8 +156,9 @@ class Chore(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     objects = ChoreManager()
 
-    def __str__(self):
-        return self.name
+    def __repr__(self):
+        return f"<Chore: {self.name} {self.customer} {self.driver} ({self.id})>"
+
 
     def get_display_price(self):
         return "{0:.2f}".format(self.price / 100)
