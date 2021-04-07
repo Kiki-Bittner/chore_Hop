@@ -1,6 +1,13 @@
 
-{% extends 'base.html %}
+{% extends 'base.html' %}
 {% block content %}
+
+        <!-- <div class="jumbotron">
+            <h1 class="display-3">The Product</h1>
+            <p class="lead">Purchase The Product for only $10.</p>
+            <a href="#" id="buy_now_btn" class="btn btn-primary">Buy Now</a>
+        </div> -->
+
         <section>
         <div class="product">
             <div class="description">
@@ -10,14 +17,20 @@
         </div>
         <button type="button" id="checkout-button">Checkout</button>
         </section>
-{% endblock content %}
+        {% csrf_token %}
     <script type="text/javascript">
+        // const csrftoken = document.querySelector('[name=middlewaretoken]').value;
         // Create an instance of the Stripe object with your publishable API key
-        var stripe = Stripe('{{ STRIPE_PUBLIC_KEY }}');
+        var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");  
         var checkoutButton = document.getElementById("checkout-button");
         checkoutButton.addEventListener("click", function () {
-        fetch("/create-checkout-session", {
+        fetch("{% url 'create-checkout-session' chore.id %}", {  
             method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')// 'X-CSRFToken': csrftoken
+            }
         })
             .then(function (response) {
             return response.json();
@@ -37,5 +50,20 @@
             console.error("Error:", error);
             });
         });
+            getCookie = (name) => {
+        if (!document.cookie) {
+        return null;
+        }
+        const token = document.cookie.split(';')
+        .map(c => c.trim())
+        .filter(c => c.startsWith(name + '='));
+
+        if (token.length === 0) {
+        return null;
+        }
+        return decodeURIComponent(token[0].split('=')[1]);
+    }
+
+
     </script>
-    </html>
+{% endblock content %}
