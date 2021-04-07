@@ -142,7 +142,7 @@ class Chore(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     due_date = models.DateField(max_length=80)
-    price = models.IntegerField()
+    price = models.IntegerField(default=0)
     completed = models.BooleanField()
     status = models.IntegerField()
     customer = models.ForeignKey(Customer, related_name="has_customer", on_delete=models.CASCADE, null=True, blank=True)
@@ -150,3 +150,9 @@ class Chore(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = ChoreManager()
+
+    def __str__(self):
+        return self.name
+
+    def get_display_price(self):
+        return "{0:.2f}".format(self.price / 100)

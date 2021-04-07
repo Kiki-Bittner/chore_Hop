@@ -6,8 +6,7 @@ from django.views import View
 from django.contrib import messages 
 from .models import Chore, Driver, Customer
 import bcrypt, json, requests
-
-#import stripe
+import stripe
 # <<<<<<< HEAD
 
 # <<<<<<< HEAD
@@ -15,41 +14,46 @@ def base(request):
     return render(request, 'base.html')
 # =======
 # =======
-# >>>>>>> 867abd9e692c0164ed731f7a5876df6ed00f67c3
-# #stripe.api_key = settings.STRIPE_SECRET_KEY
 
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
-# # IMPORTANT:  UNBLOCK 'stripe' stuff above when ready to test it
-# >>>>>>> 9a0c2f409e30f35e1b4e0a71d4be9f5f2f6934d9
-geodata = {}
 
 def index(request):
     return render(request, 'index.html')
+
+class SuccessView(TemplateView):
+    template_name = 'success.html'
+
+class CancelView(TemplateView):
+    template_name = 'cancel.html'
 
 class ChoreLandingPageView(TemplateView):
     template_name = 'landing.html'
 
     def get_context_data(self, **kwargs):
         chore = Chore.objects.get(name="Test Chore")
-        context = super(ProductLandingPageView, self).get_context_data(**kwargs)
+        context = super(ChoreLandingPageView, self).get_context_data(**kwargs)
         context.update({
             'chore': chore,
-            'STRIPE_PUBLIC_KEY': setting.STRIPE_PUBLIC_KEY
+            'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY
         })
         return context
 
 class CreateCheckoutSessionView(View):
-    def post(self,request, *args, **kwargs):
-        YOUR_DOMAIN ="http://127.0.0.1:8000/",
+    def post(self, request, *args, **kwargs):
+        chore_id = self.kwargs['pk']
+        chore = Chore.objects.get(id=chore_id)
+        print(chore)
+        YOUR_DOMAIN ="http://127.0.0.1:8000/"
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[
                 {
                     'price_data': {
                         'currency': 'usd',
-                        'unit_amount': 1000,
+                        'unit_amount': chore.price,
                         'product_data': {
-                            'name': 'Stubborn Attachments',
+                            'name': chore.name,
                             #'images': ['https://i.imgur.com/EHyR2nP.png'],
                         },
                     },
@@ -57,8 +61,8 @@ class CreateCheckoutSessionView(View):
                 },
             ],
             mode='payment',
-            success_url=YOUR_DOMAIN + '/success/',
-            cancel_url=YOUR_DOMAIN + '/cancel/',
+            success_url=YOUR_DOMAIN + 'success/',
+            cancel_url=YOUR_DOMAIN + 'cancel/',
         )
         return JsonResponse({
             'id': checkout_session.id

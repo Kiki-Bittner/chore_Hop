@@ -5,12 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         {% load static %}
-        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+        <!-- <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" /> -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-
+        
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
         <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+        <script src="https://js.stripe.com/v3/"></script>
         
         <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
         <title>Chore Hop</title>
@@ -43,7 +44,7 @@
                         </svg></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link mx-4" href="#register">Register Now</a>
+                        <a class="nav-link mx-5" href="#register">Register Now</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link disabled mx-4" href="#" tabindex="-1" aria-disabled="true">About Us</a>
