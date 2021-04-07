@@ -36,6 +36,43 @@
                         </tbody>
                         </table>
                 <p class="card-text text-center"><button class="btn btn-outline-primary">Chore Location</button> <button class="btn btn-outline-primary">Drop Off Location</button></p>
+                <div id="map" style="width: 1100px;height: 400px;"></div>
+                    <script>
+                      var latitude = "{{latitude}}"
+                      var longitude = "{{longitude}}"
+                      function myMap(){
+                        var mapProp = {
+                          center:new google.maps.LatLng(latitude, longitude),
+                          zoom: 12,
+                      };
+                      var map = new google.maps.Map(document.getElementById("map"), mapProp);
+                      function addMarker(props){
+                        var marker = new google.map.Marker({
+                        position: props.coords,
+                        map:map,
+                        });
+                        if(props.content){
+                          var infoWindow = new google.maps.infoWindow({
+                          content: props.content
+                          });
+                          marker.addListner('click', function(){
+                          infoWindow.open(map, marker);
+                      });
+                        }
+                      }
+                      }
+                      addMarker({
+                        coords:{lat:latitude, lng:longitude},
+                        content:'<h1>Starting Point</h1>'
+                      })
+                      addMarker({
+                        coords:{lat:"{{customer1_coords_lat}}",lng:"{{customer1_coords_lng}}"},
+                        content:`<h1>"{{customer1.chore.name}}"</h1>
+                        <h2>{{customer1.chore.description}}</h2>`
+                        });
+                    </script>
+                    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAEoIFrYh6q05VYt_RAQ2Nfkqx8MU31Moc&callback=myMap"></script>
+
             </div>
             <img src="https://static.makeuseof.com/wp-content/uploads/2015/10/gps-map.jpg" class="card-img-bottom" alt="map">
           </div>

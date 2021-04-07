@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.views import View
 from django.contrib import messages 
 from .models import Chore, Driver, Customer
-import bcrypt
+import bcrypt, json, requests
 
 #import stripe
 # <<<<<<< HEAD
@@ -21,6 +21,7 @@ def base(request):
 
 # # IMPORTANT:  UNBLOCK 'stripe' stuff above when ready to test it
 # >>>>>>> 9a0c2f409e30f35e1b4e0a71d4be9f5f2f6934d9
+geodata = {}
 
 def index(request):
     return render(request, 'index.html')
@@ -86,7 +87,7 @@ def register(request):
             )
             request.session['driver_id'] = driver.id
             request.session['greeting'] = driver.first_name
-            return redirect('/driver_dash')
+            return redirect(f'/driver_dash/{driver_id}')
 
     
     if request.POST['startup_owner'] == 'customer':
@@ -125,10 +126,10 @@ def login(request):
             customer = Customer.objects.get(email_address=request.POST['login_email'])  # note that here I went with 'login_email', not with email_address
             request.session['customer_id'] = customer.id
             request.session['greeting'] = customer.first_name
-            context = {
-                'first_name': Customer.objects.all(),
-            }
-            return render(request, 'customer_dash.html', context)
+            # context = {
+            #     'first_name': Customer.objects.all(),
+            # }
+            return redirect('/customer_dash')
 
     if request.POST['startup_owner'] == 'driver':
         errors = Driver.objects.login_validator(request.POST)
@@ -140,9 +141,9 @@ def login(request):
             driver = Driver.objects.get(email_address=request.POST['login_email'])  # note that here I went with 'login_email', not with email_address
             request.session['driver_id'] = driver.id
             request.session['greeting'] = driver.first_name
-            context = {            
-            }
-            return render(request, 'driver_dash.html', context)
+            # context = {            
+            # }
+            return redirect(f'/driver_dash/{driver.id}')
 # <<<<<<< HEAD
 # =======
 
@@ -150,10 +151,78 @@ def login(request):
 
 def customer_dash(request):
 
-    return render(request, 'user_dash.html', context)
+    return render(request, 'customer_dash.html')
 
-def driver_dash(request):
+def driver_dash(request, driver_id):
+    driver = Driver.objects.get(id=request.session['driver_id'])
+    customer1 = Customer.objects.get(id=1)
+    customer2 = Customer.objects.get(id=2)
+    custoemr3 = Customer.objects.get(id=3)
+    maps(driver)
+    customer1_coords = maps(customer1)
+    customer2_coords = maps(customer2)
+    customer3_coords = maps(customer3)
     context = {
         # context is empty for now, so add what you need if you need to add stuff to driver_dash page
+        "latitude": geodata['lat'],
+        "longitude": geodata['lng'],
+        "customer1": customer1,
+        "customer2": customer2,
+        "customer3": customer3,
+        "customer1_coords_lat": customer1_coords.geodata['lat'],
+        "customer1_coords_lng": customer1_coords.geodata['lng'],
+        "customer2_coords_lat": customer2_coords.geodata['lat'],
+        "customer2_coords_lng": customer2_coords.geodata['lng'],
+        "customer3_coords_lat": customer3_coords.geodata['lat'],
+        "customer3_coords_lng": customer3_coords.geodata['lng'],
     }
     return render(request, 'driver_dash.html', context)
+
+def maps(person):
+    GOOGLE_MAPS_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
+    street = person.objects.only("street")
+    city = person.objects.only("city")
+    state = person.objects.only("state")
+    params = {
+        'address': f'{street} {city},{state}',
+        'key': 'AIzaSyCCVsdD6lPm8vzcsO64fUDxp_pt65hlk4M'
+    }
+    req = requests.get(GOOGLE_MAPS_API_URL, params=params)
+    res = req.json()
+    geodata['lat'] = res['results'][0]['geometry']['location']['lat']
+    geodata['lng'] = res['results'][0]['geometry']['location']['lng']
+    geodata['address'] = res['results'][0]['formatted_address']
+    
+    return geodata
+
+def driver_chore(request):
+    driver = Driver.objects.get(email_address=request.POST['login_email'])
+    maps(driver)
+    customer1 = Customer.objects.get(id=1)
+    customer1_coords = maps(customer1)
+    context = {
+        "latitude": geodata['lat'],
+        "longitude": geodata['lng'],
+        "customer1": customer1,
+        "customer1_coords_lat": customer1_coords.geodata['lat'],
+        "customer1_coords_lng": customer1_coords.geodata['lng'],
+    }
+    return render(request, 'driver_chore.html', context)
+
+def user_chore(request):
+    customer = Customer.objects.get(email_address=request.POST['login_email'])
+    maps(customer)
+    driver1 = Driver.objects.get(id=1)
+    driver1_coords = maps(driver1)
+    context = {
+        "latitude": geodata['lat'],
+        "longitude": geodata['lng'],
+        "driver1": driver1,
+        "driver1_coords_lat": driver1_coords.geodata['lat'],
+        "driver1_coords_lng": driver1_coords.geodata['lng'],
+    }
+    return render(request, 'user_chore.html', context)
+
+def logout(request):
+    request.session.flush()
+    return redirect('/')

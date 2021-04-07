@@ -13,5 +13,8 @@ urlpatterns = [
     path('register', views.register),  # DONE
     path('login', views.login),  # DONE
     path('customer_dash', views.customer_dash),
-    path('driver_dash', views.driver_dash),
+    path('driver_dash/<int:driver_id>', views.driver_dash),
+    path('driver_chore', views.driver_chore),
+    path('user_chore', views.user_chore),
+    path("logout", views.logout),  # DONE
 ]
