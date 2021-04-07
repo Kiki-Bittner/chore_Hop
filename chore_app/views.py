@@ -112,7 +112,7 @@ def register(request):
             )
             request.session['customer_id'] = customer.id
             request.session['greeting'] = customer.first_name
-            return redirect('/customer_dash')
+            return redirect(f'/customer_dash/{customer.id}')
 
 
 def login(request):
@@ -129,7 +129,7 @@ def login(request):
             # context = {
             #     'first_name': Customer.objects.all(),
             # }
-            return redirect('/customer_dash')
+            return redirect(f'/customer_dash/{customer.id}')
 
     if request.POST['startup_owner'] == 'driver':
         errors = Driver.objects.login_validator(request.POST)
@@ -149,9 +149,13 @@ def login(request):
 
 # >>>>>>> e7a142a4e846c74deda67ed6b0d475337a45b6b9
 
-def customer_dash(request):
+def customer_dash(request, customer_id):
 
-    return render(request, 'customer_dash.html')
+    context = {
+        'current_customer': Customer.objects.get(id=customer_id),
+        'customer_chores': Customer.objects.get(id=customer_id).has_customer.all(),  
+    }
+    return render(request, 'customer_dash.html', context)
 
 def driver_dash(request, driver_id):
     driver = Driver.objects.get(id=request.session['driver_id'])
@@ -175,6 +179,9 @@ def driver_dash(request, driver_id):
         "customer2_coords_lng": customer2_coords['lng'],
         "customer3_coords_lat": customer3_coords['lat'],
         "customer3_coords_lng": customer3_coords['lng'],
+        'current_driver': Driver.objects.get(id=driver_id),
+        'customer_chores': Chore.objects.all(),
+        'driver_chores': Chore.objects.filter(driver=Driver.objects.get(id=driver_id))
     }
     return render(request, 'driver_dash.html', context)
 
@@ -209,7 +216,7 @@ def driver_chore(request):
     }
     return render(request, 'driver_chore.html', context)
 
-def user_chore(request):
+def user_chore(request, chore_id):
     customer = Customer.objects.get(email_address=request.POST['login_email'])
     maps(customer)
     driver1 = Driver.objects.get(id=1)
@@ -226,3 +233,26 @@ def user_chore(request):
 def logout(request):
     request.session.flush()
     return redirect('/')
+
+
+def new_chore(request, customer_id):
+    if request.method == "POST":
+
+        current_customer = Customer.objects.get(id=customer_id)
+
+        chore = Chore.objects.create(name=request.POST['name'], description=request.POST['description'], due_date=request.POST['due'], price=request.POST['price'], customer=current_customer)
+
+
+    return redirect(f'/customer_dash/{customer_id}')
+
+def delete_chore(request, customer_id, chore_id):
+    current_customer = Customer.objects.get(id=request.session['customer_id'])
+    current_chore = Chore.objects.filter(customer=current_customer)
+
+    c = current_chore.get(id=chore_id)
+    c.delete()
+    return redirect(f'/customer_dash/{customer_id}')
+
+def claim_chore(request, driver_id, chore_id):
+    
+    return redirect(f'/driver_dash/{driver_id}')

@@ -119,6 +119,9 @@ class Customer(models.Model):
     updated_at = models.DateTimeField(auto_now=True)    
     objects = CustomerManager()
 
+    def __repr__(self):
+        return f"<Customer: {self.first_name} {self.email_address} {self.street} ({self.id})>"
+
 
 class Driver(models.Model):
     first_name = models.CharField(max_length=255)
@@ -137,16 +140,21 @@ class Driver(models.Model):
     updated_at = models.DateTimeField(auto_now=True)    
     objects = DriverManager()
 
+    def __repr__(self):
+        return f"<Driver: {self.first_name} {self.email_address} {self.street} ({self.id})>"
 
 class Chore(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     due_date = models.DateField(max_length=80)
     price = models.IntegerField()
-    completed = models.BooleanField()
-    status = models.IntegerField()
+    completed = models.BooleanField(default=False)
+    status = models.IntegerField(default=1)
     customer = models.ForeignKey(Customer, related_name="has_customer", on_delete=models.CASCADE, null=True, blank=True)
     driver = models.ForeignKey(Driver, related_name="has_driven", on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = ChoreManager()
+
+    def __repr__(self):
+        return f"<Chore: {self.name} {self.customer} {self.driver} ({self.id})>"
