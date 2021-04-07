@@ -91,7 +91,7 @@ def register(request):
             )
             request.session['driver_id'] = driver.id
             request.session['greeting'] = driver.first_name
-            return redirect(f'/driver_dash/{driver_id}')
+            return redirect(f'/driver_dash/{driver.id}')
 
     
     if request.POST['startup_owner'] == 'customer':
@@ -161,7 +161,7 @@ def driver_dash(request, driver_id):
     driver = Driver.objects.get(id=request.session['driver_id'])
     customer1 = Customer.objects.get(id=1)
     customer2 = Customer.objects.get(id=2)
-    custoemr3 = Customer.objects.get(id=3)
+    customer3 = Customer.objects.get(id=3)
     maps(driver)
     customer1_coords = maps(customer1)
     customer2_coords = maps(customer2)
@@ -173,20 +173,20 @@ def driver_dash(request, driver_id):
         "customer1": customer1,
         "customer2": customer2,
         "customer3": customer3,
-        "customer1_coords_lat": customer1_coords.geodata['lat'],
-        "customer1_coords_lng": customer1_coords.geodata['lng'],
-        "customer2_coords_lat": customer2_coords.geodata['lat'],
-        "customer2_coords_lng": customer2_coords.geodata['lng'],
-        "customer3_coords_lat": customer3_coords.geodata['lat'],
-        "customer3_coords_lng": customer3_coords.geodata['lng'],
+        "customer1_coords_lat": customer1_coords['lat'],
+        "customer1_coords_lng": customer1_coords['lng'],
+        "customer2_coords_lat": customer2_coords['lat'],
+        "customer2_coords_lng": customer2_coords['lng'],
+        "customer3_coords_lat": customer3_coords['lat'],
+        "customer3_coords_lng": customer3_coords['lng'],
     }
     return render(request, 'driver_dash.html', context)
 
 def maps(person):
     GOOGLE_MAPS_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
-    street = person.objects.only("street")
-    city = person.objects.only("city")
-    state = person.objects.only("state")
+    street = person.street
+    city = person.city
+    state = person.state
     params = {
         'address': f'{street} {city},{state}',
         'key': 'AIzaSyCCVsdD6lPm8vzcsO64fUDxp_pt65hlk4M'
